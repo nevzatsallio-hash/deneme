@@ -1572,7 +1572,14 @@ let _cache = null;
 if(BULUT){
   window.storage = {
     async get(key){
-      if(_cache && key in _cache) return { key, value: _cache[key] };
+      /* Açılışta apiGetAll ile tüm veri _cache'e yüklendi. Cache doluysa
+         anahtarın burada olmaması "henüz hiç kaydedilmemiş" demektir; gereksiz
+         bir apiGet ağ turu atmadan doğrudan bulunamadı dönüyoruz (loadKey
+         zaten yakalayıp fallback değeri kullanır). */
+      if(_cache){
+        if(key in _cache) return { key, value: _cache[key] };
+        throw new Error('Key not found: ' + key);
+      }
       const r = await gs('apiGet', key);
       if(!r) throw new Error('Key not found: ' + key);
       return r;
@@ -1617,7 +1624,18 @@ async function fotoKaydet(id, dataUrl, tur){
     if(!r || !r.fotoId) throw new Error('Drive yüklemesi ID döndürmedi');
     return r.fotoId;                       // Drive dosya ID'si
   }
-  await window.storage.set('foto:'+id, dataUrl);
+  /* Yerel modda fotoğraf base64 olarak localStorage'a yazılır; tarayıcı kotası
+     (çoğu tarayıcıda ~5 MB) dolduğunda net bir hata fırlatalım ki çağıran
+     bunu "depolama dolu" olarak kullanıcıya yansıtabilsin. */
+  try{
+    await window.storage.set('foto:'+id, dataUrl);
+  }catch(e){
+    const kotaHatasi = e && (e.name === 'QuotaExceededError' ||
+      e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || /quota|kota/i.test(e.message || ''));
+    throw new Error(kotaHatasi
+      ? 'Yerel depolama dolu — fotoğraf kaydedilemedi. Bulut moduna geçmeniz önerilir.'
+      : (e && e.message) || 'Fotoğraf kaydedilemedi');
+  }
   return 'local:' + id;
 }
 async function fotoOku(fotoId){
@@ -1742,7 +1760,7 @@ async function driveLinkiniGuncelle(){
   }catch(e){ a.style.display = 'none'; }
 }
 async function save(key, value){
-  try{ await window.storage.set(key, JSON.stringify(value), false); }
+  try{ await window.storage.set(key, JSON.stringify(value)); }
   catch(e){ console.error('Kayıt hatası', key, e); showToast('Kayıt sırasında bir sorun oluştu', true); }
 }
 
@@ -2142,7 +2160,7 @@ document.getElementById('formKayit').addEventListener('submit', async (e)=>{
       rec.hasFoto = true;
     }catch(err){
       console.error('Foto yükleme hatası', err);
-      showToast('Fotoğraf yüklenemedi, kayıt fotoğrafsız kaydedildi', true);
+      showToast(/depolama dolu/.test(err && err.message || '') ? err.message : 'Fotoğraf yüklenemedi, kayıt fotoğrafsız kaydedildi', true);
       rec.hasFoto = false;
     }
   } else if(removeFotoOnSave){
@@ -6260,7 +6278,7 @@ document.getElementById('btnHakedisKaydet').addEventListener('click', async ()=>
   if(hakPendingFoto){
     btn.disabled = true; btn.textContent = 'Yükleniyor…';
     try{ hakedis.fotoId = await fotoKaydet(id, hakPendingFoto, 'kayit'); }
-    catch(err){ console.error(err); showToast('Fotoğraf yüklenemedi', true); }
+    catch(err){ console.error(err); showToast(/depolama dolu/.test(err && err.message || '') ? err.message : 'Fotoğraf yüklenemedi', true); }
     btn.disabled = false; btn.textContent = 'Hakedişi Kaydet';
   } else if(editingHakedisId){
     const eski = state.hakedisler.find(x=>x.id===editingHakedisId);
@@ -6513,7 +6531,7 @@ document.getElementById('btnGunlukEkle').addEventListener('click', async ()=>{
   if(gPendingFoto){
     btn.disabled = true; btn.textContent = 'Yükleniyor…';
     try{ kayit.fotoId = await fotoKaydet(id, gPendingFoto, 'gunluk'); }
-    catch(err){ console.error(err); showToast('Fotoğraf yüklenemedi, kayıt fotoğrafsız eklendi', true); }
+    catch(err){ console.error(err); showToast(/depolama dolu/.test(err && err.message || '') ? err.message : 'Fotoğraf yüklenemedi, kayıt fotoğrafsız eklendi', true); }
     btn.disabled = false; btn.textContent = 'Günlüğe Ekle';
   }
 
@@ -7243,7 +7261,20 @@ function updateTakvimBadge(){
 
 function renderChart(labels, data){
   const ctx = document.getElementById('chartKategori');
-  if(typeof Chart === 'undefined') return;
+  if(typeof Chart === 'undefined'){
+    /* Grafik kütüphanesi (Chart.js) CDN'den yüklenemedi — çevrimdışı olabilir.
+       Uygulama çalışmaya devam eder; grafik yerine kullanıcıya bir not gösterip
+       canvas'ı gizliyoruz (sessizce kaybolması kafa karıştırıcıydı). */
+    if(ctx && !ctx.dataset.fallback){
+      const not = document.createElement('div');
+      not.className = 'empty-state';
+      not.textContent = 'Grafik görüntülenemiyor — Chart.js yüklenemedi (internet bağlantısı gerekiyor).';
+      ctx.dataset.fallback = '1';
+      ctx.style.display = 'none';
+      ctx.after(not);
+    }
+    return;
+  }
   if(chartKategori) chartKategori.destroy();
   const hasData = data.some(v=>v>0);
   const palette = ['#ff6a39','#5b9bd9','#6fcf97','#e8b94a','#c48ade','#8f9ba1','#e2574c','#4dd0e1'];
