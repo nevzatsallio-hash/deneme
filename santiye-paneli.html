@@ -13,6 +13,11 @@
   --text:#eceae4; --text-dim:#8f9ba1; --text-faint:#5f6b71;
   --accent:#ff6a39; --accent-dim:#c4532a; --blue:#5b9bd9; --blue-dim:#3d6f9e;
   --green:#6fcf97; --red:#e2574c; --yellow:#e8b94a; --purple:#c48ade;
+  /* Takma adlar — palet tek kaynaktan yönetilsin: turuncu vurgu = marka rengi,
+     "ok" (olumlu) durum = yeşil. Önceden --orange hiç tanımlı değildi ve
+     onu kullanan kurallar (Rayiç aktif buton, ağaç vurguları) sessizce
+     çalışmıyordu. */
+  --orange:var(--accent); --ok:var(--green);
   --font-d:'Space Grotesk',-apple-system,'Segoe UI',sans-serif;
   --font-m:'IBM Plex Mono','SF Mono',Consolas,monospace;
 }
@@ -51,9 +56,12 @@ input,select,textarea{font-family:inherit;}
 .nav-grup[aria-expanded="false"] .grup-cev{transform:rotate(0deg);}
 .grup-say{margin-left:auto;font-family:var(--font-m);font-size:9px;font-weight:600;
   letter-spacing:0;color:var(--text-faint);opacity:.55;}
-.nav-liste{display:flex;flex-direction:column;gap:2px;overflow:hidden;
-  max-height:1200px;transition:max-height .22s ease, opacity .18s ease;opacity:1;}
-.nav-liste.kapali{max-height:0;opacity:0;}
+/* Açılır/kapanır: sihirli max-height yerine grid-template-rows 1fr↔0fr —
+   içerik ne kadar uzun olursa olsun kesilmez, animasyon hızı tutarlı kalır. */
+.nav-liste{display:grid;grid-template-rows:1fr;
+  transition:grid-template-rows .22s ease, opacity .18s ease;opacity:1;}
+.nav-liste.kapali{grid-template-rows:0fr;opacity:0;}
+.nav-liste-ic{display:flex;flex-direction:column;gap:2px;overflow:hidden;min-height:0;}
 .nav-btn{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:7px;border:none;
   background:transparent;color:var(--text-dim);text-align:left;font-size:13px;font-weight:500;
   transition:background .15s, color .15s;}
@@ -175,9 +183,10 @@ td.num{font-family:var(--font-m);text-align:right;}
 .firma-bas .tut{margin-left:auto;text-align:right;font-family:var(--font-m);
   font-size:11px;line-height:1.35;}
 .firma-bas .tut b{display:block;font-size:12.5px;}
-.firma-govde{overflow:hidden;max-height:4000px;opacity:1;
-  transition:max-height .25s ease, opacity .2s ease;}
-.firma-govde.kapali{max-height:0;opacity:0;}
+.firma-govde{display:grid;grid-template-rows:1fr;opacity:1;
+  transition:grid-template-rows .25s ease, opacity .2s ease;}
+.firma-govde.kapali{grid-template-rows:0fr;opacity:0;}
+.firma-govde-ic{overflow:hidden;min-height:0;}
 /* Grup içindeki kartları hafifçe içeri al — hiyerarşi görünsün */
 .firma-grup .soz-card{margin-left:11px;}
 @media(max-width:760px){
@@ -444,10 +453,13 @@ td.num{font-family:var(--font-m);text-align:right;}
   .brand{display:none;} .sidebar-foot{display:none;}
   /* Mobilde dikey kaydırma sarmalayıcısı devre dışı: sekmeler yatay akar */
   .nav-kaydir{flex:none;flex-direction:row;overflow:visible;min-height:0;padding-bottom:0;gap:8px;}
-  /* Mobilde grup başlıkları gizlenir, tüm sekmeler tek şeritte akar */
+  /* Mobilde grup başlıkları gizlenir, tüm sekmeler tek şeritte akar.
+     Grid açılır-kapanır davranışı devre dışı: bloklar düz akıp iç sarmalayıcı
+     sekmeleri yatay dizer. */
   .nav-grup{display:none;}
-  .nav-liste{flex-direction:row;gap:8px;max-height:none;opacity:1;overflow:visible;}
-  .nav-liste.kapali{max-height:none;opacity:1;}
+  .nav-liste{display:block;opacity:1;}
+  .nav-liste.kapali{opacity:1;}
+  .nav-liste-ic{flex-direction:row;gap:8px;overflow:visible;}
   .nav-btn{flex:none;white-space:nowrap;}
   main{padding:20px 16px 50px;}
 }
@@ -584,17 +596,17 @@ td.num{font-family:var(--font-m);text-align:right;}
     <!-- ---- Genel ---- -->
     <button class="nav-grup" data-grup="g-genel" aria-expanded="true">
       <span class="grup-cev">▸</span> Genel <span class="grup-say">3</span></button>
-    <div class="nav-liste" id="g-genel">
-      <button class="nav-btn active" data-view="dashboard"><span class="nav-ico"></span> Özet / Rapor
+    <div class="nav-liste" id="g-genel"><div class="nav-liste-ic">
+      <button class="nav-btn active" aria-current="page" data-view="dashboard"><span class="nav-ico"></span> Özet / Rapor
         <span class="nav-badge" id="navBadgeOzet" style="display:none"></span></button>
       <button class="nav-btn" data-view="girisi"><span class="nav-ico"></span> Veri Girişi</button>
       <button class="nav-btn" data-view="kayitlar"><span class="nav-ico"></span> Kayıtlar</button>
-    </div>
+    </div></div>
 
     <!-- ---- Takip ---- -->
     <button class="nav-grup" data-grup="g-takip" aria-expanded="true">
       <span class="grup-cev">▸</span> Takip <span class="grup-say">7</span></button>
-    <div class="nav-liste" id="g-takip">
+    <div class="nav-liste" id="g-takip"><div class="nav-liste-ic">
       <button class="nav-btn" data-view="cari"><span class="nav-ico"></span> Cari Hesap</button>
       <button class="nav-btn" data-view="sozlesme"><span class="nav-ico"></span> Sözleşmeler <span class="nav-badge" id="navBadgeSoz" style="display:none"></span></button>
       <button class="nav-btn" data-view="butce"><span class="nav-ico"></span> Bütçe Planlama</button>
@@ -602,24 +614,24 @@ td.num{font-family:var(--font-m);text-align:right;}
       <button class="nav-btn" data-view="rapor"><span class="nav-ico"></span> Analiz Raporu</button>
       <button class="nav-btn" data-view="takvim"><span class="nav-ico"></span> Nakit Takvimi <span class="nav-badge" id="navBadgeTakvim" style="display:none"></span></button>
       <button class="nav-btn" data-view="gunluk"><span class="nav-ico"></span> Şantiye Günlüğü</button>
-    </div>
+    </div></div>
 
     <!-- ---- Tanımlar ---- -->
     <button class="nav-grup" data-grup="g-tanim" aria-expanded="true">
       <span class="grup-cev">▸</span> Tanımlar <span class="grup-say">5</span></button>
-    <div class="nav-liste" id="g-tanim">
+    <div class="nav-liste" id="g-tanim"><div class="nav-liste-ic">
       <button class="nav-btn" data-view="firmalar"><span class="nav-ico"></span> Firmalar</button>
       <button class="nav-btn" data-view="kategoriler"><span class="nav-ico"></span> Kategoriler</button>
       <button class="nav-btn" data-view="rayic"><span class="nav-ico"></span> Rayiç Fiyat Listesi</button>
       <button class="nav-btn" data-view="proje"><span class="nav-ico"></span> Proje Bilgisi</button>
       <button class="nav-btn" data-view="yedekleme"><span class="nav-ico"></span> Yedekleme</button>
-    </div>
+    </div></div>
     </div><!-- /nav-kaydir -->
 
     <div class="sidebar-foot">
       <div id="kullaniciSatir" style="display:none;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:6px">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--ok,#38b26b);flex:none"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--ok);flex:none"></span>
           <span style="color:var(--text-dim)">Buluta bağlı</span>
         </div>
         <div id="kullaniciEtiket" style="margin-top:3px;word-break:break-all;color:var(--text-faint)">…</div>
@@ -1487,7 +1499,7 @@ td.num{font-family:var(--font-m);text-align:right;}
   </main>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modal-overlay" id="fotoModal"><div class="modal-box"><div class="modal-close"><button class="icon-btn" id="btnCloseModal">✕</button></div><img id="modalImg"></div></div>
 
 <script>
@@ -1832,9 +1844,10 @@ const RENDER_MAP = {
 };
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b=>{ b.classList.remove('active'); b.removeAttribute('aria-current'); });
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     btn.classList.add('active');
+    btn.setAttribute('aria-current', 'page');
     document.getElementById('view-'+btn.dataset.view).classList.add('active');
     /* Programatik geçişte (ör. kısayol) sekme kapalı bir gruptaysa grubu aç */
     grupAc(btn.closest('.nav-liste'));
@@ -3438,8 +3451,8 @@ function raporPdf(){
   const proje = state.proje || {};
   const bugun = new Date().toLocaleDateString('tr-TR');
   const fmtN  = v => (v||0).toLocaleString('tr-TR',{minimumFractionDigits:2, maximumFractionDigits:2});
-  const esc   = x => String(x==null?'':x).replace(/[&<>"]/g,
-                  c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const esc   = x => String(x==null?'':x).replace(/[&<>"']/g,
+                  c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const vergiBorcu = Math.max(0, r.I.kdv - r.T.kdv) + r.T.stopaj;
 
   /* Bir sözleşmenin PDF kırılımı */
@@ -4912,7 +4925,7 @@ function sozGrupHtml(list, isv, onek){
         </span>
       </button>
       <div class="firma-govde" id="${gid}">
-        ${sozler.map(s=>sozKarti(s, true)).join('')}
+        <div class="firma-govde-ic">${sozler.map(s=>sozKarti(s, true)).join('')}</div>
       </div>
     </div>`;
   }).join('');
@@ -6774,7 +6787,7 @@ function hakedisPdf(hakId){
     : `<span style="display:inline-block;padding:2px 9px;border:1.5px solid #c82828;
          color:#c82828;font-weight:700;font-size:8pt;letter-spacing:.8px">⚠ TASLAK — ONAYLANMAMIŞ</span>`;
   const fmtN  = v => (v||0).toLocaleString('tr-TR',{minimumFractionDigits:2, maximumFractionDigits:2});
-  const esc   = s => String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const esc   = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   /* ---- Metraj cetveli (birim fiyat) veya pursantaj (götürü) ---- */
   let cetvel = '';
