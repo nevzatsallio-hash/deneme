@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>BM Instagram Post</title>
+<style>
+  :root{
+    --bg:#060d1c; --bg2:#0b1830; --panel:#0e1c36; --line:#1d3358;
+    --orange:#ff6a13; --orange2:#ffa21a; --text:#eef3fb; --muted:#9fb0cc; --blue:#2f8cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1080px;background:var(--bg);overflow:hidden}
+  body{font-family:"Inter Display","Inter",sans-serif;color:var(--text)}
+  .post{position:relative;width:1080px;height:1080px;overflow:hidden;
+    background:
+      radial-gradient(700px 500px at 85% 30%, rgba(47,140,255,.28), transparent 70%),
+      radial-gradient(600px 400px at 30% 75%, rgba(255,106,19,.16), transparent 70%),
+      linear-gradient(180deg,#081329 0%, #060d1c 60%, #040914 100%);}
+  /* blueprint grid floor */
+  .grid{position:absolute;inset:0;
+    background-image:linear-gradient(rgba(47,140,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(47,140,255,.10) 1px,transparent 1px);
+    background-size:40px 40px;mask-image:linear-gradient(180deg,transparent 35%,#000 75%,transparent 100%)}
+  .corner{position:absolute;width:260px;height:26px;background:linear-gradient(90deg,var(--orange),var(--orange2));transform:rotate(-45deg)}
+  .c1{top:30px;left:-80px}.c2{bottom:30px;right:-80px}
+
+  /* header */
+  .logo{position:absolute;top:52px;left:60px;display:flex;align-items:center;gap:16px}
+  .slash{font-size:96px;font-weight:900;font-style:italic;color:var(--orange);letter-spacing:-14px;line-height:1}
+  .bm{font-size:104px;font-weight:900;line-height:1;letter-spacing:-3px;
+    background:linear-gradient(180deg,#fff,#c8d4e8);-webkit-background-clip:text;color:transparent}
+  .bmsub{font-size:34px;font-weight:700;color:#e6edf8;margin-top:22px}
+  .bmsub sup{font-size:16px}
+  .tagline{position:absolute;top:50px;right:58px;text-align:right;transform:rotate(-7deg);
+    font-size:30px;font-weight:700;font-style:italic;line-height:1.25;color:#fff}
+  .tagline b{color:var(--orange)}
+  .tagline i{display:block;height:4px;margin:4px 0 0 auto;width:150px;background:var(--orange);border-radius:4px}
+
+  .h1{position:absolute;top:196px;left:60px}
+  .pill{display:inline-block;padding:10px 26px 12px;border-radius:14px;
+    background:linear-gradient(90deg,var(--orange),#ff8b1f);font-size:52px;font-weight:900;font-style:italic;
+    letter-spacing:-1px;box-shadow:0 10px 40px rgba(255,106,19,.45)}
+  .big{font-size:84px;font-weight:900;font-style:italic;letter-spacing:-2px;margin-top:6px;
+    background:linear-gradient(180deg,#ffb23a,#ff6a13);-webkit-background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 18px rgba(255,106,19,.35))}
+
+  /* building svg */
+  .building{position:absolute;right:-60px;top:250px;width:470px;opacity:.55}
+
+  /* features */
+  .features{position:absolute;left:60px;top:420px;display:flex;flex-direction:column;gap:26px}
+  .f{display:flex;align-items:center;gap:16px}
+  .ico{width:62px;height:62px;border-radius:14px;border:2px solid var(--orange);display:grid;place-items:center;
+    background:rgba(255,106,19,.08);box-shadow:0 0 18px rgba(255,106,19,.35) inset}
+  .ico svg{width:32px;height:32px;stroke:var(--orange);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .f span{font-size:23px;font-weight:600;line-height:1.15}
+
+  /* app window */
+  .win{position:absolute;left:265px;top:415px;width:600px;height:370px;border-radius:16px;
+    background:linear-gradient(180deg,rgba(17,33,64,.97),rgba(10,21,42,.97));border:1.5px solid #2b4a7c;
+    box-shadow:0 0 0 2px rgba(255,106,19,.55),0 0 60px rgba(255,106,19,.35),0 30px 60px rgba(0,0,0,.6);
+    transform:perspective(1400px) rotateY(-8deg) rotateX(3deg);padding:14px}
+  .wt{display:flex;justify-content:space-between;align-items:center;font-size:19px;font-weight:700;margin-bottom:10px}
+  .wt em{color:var(--orange);font-style:italic;font-weight:900}
+  .dots{display:flex;gap:10px;color:var(--muted);font-size:14px}
+  .wb{display:flex;gap:10px;height:310px}
+  .side{width:150px;display:flex;flex-direction:column;gap:7px}
+  .side div{font-size:13px;padding:9px 10px;border-radius:7px;background:#13264a;border:1px solid var(--line);font-weight:500}
+  .side .on{background:linear-gradient(90deg,var(--orange),#ff8b1f);border-color:transparent;font-weight:700}
+  .main{flex:1;display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:auto 1fr auto;gap:8px}
+  .card{background:#0f2142;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:13px}
+  .card h4{font-size:14px;margin-bottom:8px;font-weight:700}
+  .bar{display:flex;align-items:center;gap:6px;font-size:11px;margin:5px 0;color:#cfd9ea}
+  .bar b{flex:1;height:8px;border-radius:4px;background:#1b3360;position:relative;overflow:hidden}
+  .bar b::after{content:"";position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,var(--orange2),var(--orange))}
+  .stat{font-size:24px;font-weight:800;color:#fff}
+  .stat small{font-size:12px;color:var(--muted);font-weight:500}
+  .kv{font-size:11px;color:var(--muted);line-height:1.6}
+  .kv b{color:#fff}
+  .btn{grid-column:1/3;display:flex;justify-content:space-between;align-items:center}
+  .btn .s{flex:1;height:38px;border-radius:8px;background:#0b1934;border:1px solid var(--line);margin-right:8px;
+    font-size:12px;color:var(--muted);display:flex;align-items:center;padding-left:12px}
+  .btn .go{height:40px;padding:0 22px;border-radius:8px;background:linear-gradient(90deg,var(--orange),#ff8b1f);
+    font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;box-shadow:0 0 22px rgba(255,106,19,.6)}
+
+  /* bottom tiles */
+  .tiles{position:absolute;left:60px;right:60px;top:822px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .tile{height:118px;border-radius:14px;border:1.5px solid rgba(255,106,19,.65);
+    background:linear-gradient(160deg,#12274d,#0a1630);position:relative;overflow:hidden;
+    box-shadow:0 0 18px rgba(255,106,19,.18)}
+  .tile svg.art{position:absolute;right:8px;top:8px;width:120px;height:62px;opacity:.6}
+  .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0a1630 30%,transparent 75%);z-index:0}
+  .tile .lbl{z-index:1}
+  .tile .lbl{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800}
+  .tile .lbl i{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--orange);display:grid;place-items:center;background:#0b1834}
+  .tile .lbl i svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2}
+
+  /* footer */
+  .foot{position:absolute;left:60px;bottom:40px;display:flex;align-items:center;gap:22px}
+  .acad{display:flex;align-items:center;gap:12px;font-size:28px;font-weight:800;letter-spacing:.5px}
+  .sep{width:2px;height:48px;background:var(--orange)}
+  .fx b{font-size:20px;display:block}.fx span{font-size:16px;color:#c7d3e6}
+  .stamp{position:absolute;right:70px;bottom:44px;transform:rotate(-8deg);text-align:right;
+    font-size:30px;font-weight:800;font-style:italic;line-height:1.1}
+  .stamp span{background:var(--orange);padding:2px 12px;border-radius:4px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="post">
+  <div class="grid"></div>
+  <div class="corner c1"></div><div class="corner c2"></div>
+
+  <!-- building wireframe -->
+  <svg class="building" viewBox="0 0 560 620" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="cl" x1="0" x2="1"><stop offset="0" stop-color="#dfe6f2"/><stop offset="1" stop-color="#8d9bb3"/></linearGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <!-- crane -->
+    <g stroke="#7f8fae" stroke-width="3" fill="none" opacity=".7">
+      <path d="M470 20 V300"/><path d="M380 40 H560"/><path d="M470 20 L400 40 M470 20 L540 40"/>
+      <path d="M520 40 V95"/><rect x="510" y="95" width="20" height="14" fill="#7f8fae"/>
+    </g>
+    <!-- floors -->
+    <g>
+      <!-- slabs -->
+      <g fill="url(#cl)">
+        <polygon points="120,560 470,560 520,520 170,520"/>
+        <polygon points="120,440 470,440 520,400 170,400"/>
+        <polygon points="120,320 470,320 520,280 170,280"/>
+        <polygon points="120,200 470,200 520,160 170,160"/>
+      </g>
+      <!-- columns -->
+      <g fill="#c9d3e3">
+        <rect x="128" y="200" width="18" height="360"/><rect x="238" y="200" width="18" height="360"/>
+        <rect x="348" y="200" width="18" height="360"/><rect x="452" y="200" width="18" height="360"/>
+        <rect x="502" y="160" width="14" height="360" fill="#9aa8c0"/>
+      </g>
+      <!-- rebars on top -->
+      <g stroke="#b9c3d6" stroke-width="2">
+        <path d="M132 160 V120 M138 160 V115 M142 160 V122"/><path d="M242 160 V112 M248 160 V118 M252 160 V114"/>
+        <path d="M352 160 V116 M358 160 V110 M362 160 V120"/><path d="M456 160 V118 M462 160 V112 M466 160 V120"/>
+      </g>
+      <!-- orange glowing rebar mesh -->
+      <g stroke="#ff7a1a" stroke-width="1.6" filter="url(#glow)" opacity=".9">
+        <path d="M150 300 H340 M150 290 H340 M160 280 V320 M190 280 V320 M220 280 V320 M290 280 V320 M320 280 V320"/>
+        <path d="M260 420 H450 M260 410 H450 M270 400 V440 M300 400 V440 M330 400 V440 M400 400 V440 M430 400 V440"/>
+        <path d="M150 540 H340 M150 530 H340 M160 520 V560 M200 520 V560 M240 520 V560 M300 520 V560"/>
+        <path d="M137 205 V555 M247 205 V555 M357 205 V555 M461 205 V555"/>
+        <path d="M128 260 H470 M128 380 H470 M128 500 H470" stroke-dasharray="6 6"/>
+      </g>
+    </g>
+  </svg>
+
+  <div class="logo">
+    <div class="slash">//</div>
+    <div class="bm">BM</div>
+    <div class="bmsub">(Betonarme Metraj)<sup>®</sup></div>
+  </div>
+
+  <div class="tagline">Metraj Artık<br>Dakikalar <b>İçinde!</b><i></i></div>
+
+  <div class="h1">
+    <div class="pill">Doğru Metraj, Doğru Maliyet</div>
+    <div class="big">Hatasız Projeler!</div>
+  </div>
+
+  <div class="features">
+    <div class="f"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13 L16 9 M9 2h6"/></svg></div><span>Zaman<br>Tasarrufu</span></div>
+    <div class="f"><div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h2M12 10h2M16 10h0M8 14h2M12 14h2M8 18h2M12 18h2M16 14v4"/></svg></div><span>Hassas<br>Hesaplama</span></div>
+    <div class="f"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg></div><span>Detaylı<br>Raporlar</span></div>
+    <div class="f"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/><path d="m8 12 3 3 5-6"/></svg></div><span>TS 500<br>Uyumlu</span></div>
+  </div>
+
+  <div class="win">
+    <div class="wt"><div><em>//BM</em> – Betonarme Metraj</div><div class="dots">—&nbsp;&nbsp;☐&nbsp;&nbsp;✕</div></div>
+    <div class="wb">
+      <div class="side">
+        <div class="on">▣ Donatı Metrajı</div>
+        <div>▢ Kolon İşlemleri</div>
+        <div>▢ Kiriş İşlemleri</div>
+        <div>▢ Perde İşlemleri</div>
+        <div>▢ Plak İşlemleri</div>
+        <div>▢ Temel İşlemleri</div>
+        <div>☰ Raporlar</div>
+      </div>
+      <div class="main">
+        <div class="card">
+          <h4>Donatı Dağılımı</h4>
+          <div class="bar">Ø8 <b style="--w:38%"></b> 38%</div>
+          <div class="bar">Ø12 <b style="--w:27%"></b> 27%</div>
+          <div class="bar">Ø16 <b style="--w:21%"></b> 21%</div>
+          <div class="bar">Ø20 <b style="--w:14%"></b> 14%</div>
+        </div>
+        <div class="card">
+          <h4>Beton</h4>
+          <div class="stat">312,40 <small>m³</small></div>
+          <div class="kv">Sınıf: <b>C30/37</b><br>Kalıp: <b>1.860 m²</b></div>
+        </div>
+        <div class="card">
+          <h4>Toplam Donatı</h4>
+          <div class="stat">28,6 <small>ton</small></div>
+          <svg viewBox="0 0 200 50" style="width:100%;height:48px;margin-top:4px">
+            <polyline points="0,42 30,36 60,38 90,24 120,28 150,14 200,8" fill="none" stroke="#ff7a1a" stroke-width="3"/>
+            <polyline points="0,42 30,36 60,38 90,24 120,28 150,14 200,8 200,50 0,50" fill="rgba(255,122,26,.15)"/>
+          </svg>
+        </div>
+        <div class="card">
+          <h4>Hasır Çelik</h4>
+          <div class="stat">4,2 <small>ton</small></div>
+          <div class="kv">Q188 · Q221 · R257<br>Kat: <b>6</b></div>
+        </div>
+        <div class="btn">
+          <div class="s">⌕ &nbsp;Proje: Konut_Blok_A.dwg</div>
+          <div class="go">▶ Metraj Hesapla</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tiles">
+    <div class="tile">
+      <svg class="art" viewBox="0 0 150 100"><g fill="none" stroke="#c8d2e4" stroke-width="2"><path d="M20 90V20M60 90V20M100 90V20M140 90V20"/><path d="M10 25H145M10 55H145M10 85H145"/></g></svg>
+      <div class="lbl"><i><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20"/><path d="M5 8h14M5 14h14"/></svg></i>Kolon</div>
+    </div>
+    <div class="tile">
+      <svg class="art" viewBox="0 0 150 100"><g fill="none" stroke="#c8d2e4" stroke-width="2"><rect x="10" y="35" width="135" height="26"/><path d="M20 35v26M35 35v26M50 35v26M65 35v26M80 35v26M95 35v26M110 35v26M125 35v26"/><path d="M10 42H145M10 54H145" stroke="#ff7a1a"/></g></svg>
+      <div class="lbl"><i><svg viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6"/><path d="M6 9v6M10 9v6M14 9v6M18 9v6"/></svg></i>Kiriş</div>
+    </div>
+    <div class="tile">
+      <svg class="art" viewBox="0 0 150 100"><g fill="none" stroke="#c8d2e4" stroke-width="1.6"><path d="M10 20H145M10 35H145M10 50H145M10 65H145M10 80H145"/><path d="M20 10V95M40 10V95M60 10V95M80 10V95M100 10V95M120 10V95M140 10V95"/></g></svg>
+      <div class="lbl"><i><svg viewBox="0 0 24 24"><path d="M3 8h18M3 16h18M8 3v18M16 3v18"/></svg></i>Plak</div>
+    </div>
+    <div class="tile">
+      <svg class="art" viewBox="0 0 150 100"><g fill="none" stroke="#c8d2e4" stroke-width="2"><path d="M10 70 H145 L135 90 H20 Z"/><rect x="45" y="30" width="60" height="40"/><path d="M55 30V70M75 30V70M95 30V70" stroke="#ff7a1a"/></g></svg>
+      <div class="lbl"><i><svg viewBox="0 0 24 24"><path d="M2 18h20l-2 4H4zM7 8h10v10H7z"/></svg></i>Temel</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="acad">
+      <svg width="46" height="46" viewBox="0 0 46 46"><polygon points="23,2 44,44 32,44 23,24 14,44 2,44" fill="#e5222b"/><polygon points="23,24 32,44 14,44" fill="#a3141a"/></svg>
+      AUTOCAD
+    </div>
+    <div class="sep"></div>
+    <div class="fx"><b>BM (Betonarme Metraj)</b><span>Projeden metraja, tek tıkla.</span></div>
+  </div>
+
+  <div class="stamp">Mühendisin<br><span>Akıllı Asistanı</span></div>
+</div>
+</body>
+</html>
